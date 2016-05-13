@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6B7431721CE58C2D00975B71 /* Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B7431711CE58C2D00975B71 /* Test.m */; };
 		C017234B1C66695100174B13 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C017234A1C66695100174B13 /* main.m */; };
 		C017234E1C66695100174B13 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C017234D1C66695100174B13 /* AppDelegate.m */; };
 		C01723541C66695100174B13 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C01723521C66695100174B13 /* Main.storyboard */; };
@@ -16,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6B7431701CE58C2D00975B71 /* Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
+		6B7431711CE58C2D00975B71 /* Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Test.m; sourceTree = "<group>"; };
 		C01723461C66695100174B13 /* ASJTabBarControllerExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ASJTabBarControllerExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C017234A1C66695100174B13 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C017234C1C66695100174B13 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -83,6 +86,8 @@
 			children = (
 				C01723651C666B9400174B13 /* ASJTabBarController.h */,
 				C01723661C666B9400174B13 /* ASJTabBarController.m */,
+				6B7431701CE58C2D00975B71 /* Test.h */,
+				6B7431711CE58C2D00975B71 /* Test.m */,
 			);
 			name = ASJTabBarController;
 			path = ../../ASJTabBarController;
@@ -159,6 +164,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C017234E1C66695100174B13 /* AppDelegate.m in Sources */,
+				6B7431721CE58C2D00975B71 /* Test.m in Sources */,
 				C017234B1C66695100174B13 /* main.m in Sources */,
 				C01723671C666B9400174B13 /* ASJTabBarController.m in Sources */,
 			);

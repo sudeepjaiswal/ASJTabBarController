@@ -1,14 +1,14 @@
 //
-//  ASJTabBarController.h
+//  Test.h
 //  ASJTabBarControllerExample
 //
-//  Created by sudeep on 06/02/16.
+//  Created by ABS_MAC02 on 13/05/16.
 //  Copyright © 2016 sudeep. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
 
-@interface ASJTabBarController : UITabBarController
+@interface Test : UIViewController
 
 @property (assign, nonatomic) IBInspectable BOOL shouldShowIndicator;
 @property (assign, nonatomic) IBInspectable BOOL shouldAnimateIndicator;

@@ -11,15 +11,18 @@
 static NSString *const kViewControllersKey = @"viewControllers";
 static NSString *const kSelectedViewControllerKey = @"selectedViewController";
 
-@interface ASJTabBarController ()
+@interface ASJTabBarController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
+@property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) UIView *tabIndicator;
+@property (copy, nonatomic) NSArray *viewControllersToShow;
 @property (readonly, nonatomic) CGFloat tabWidth;
-@property (weak, nonatomic) NSNotificationCenter *notificationCenter;
+@property (readonly, weak, nonatomic) NSNotificationCenter *notificationCenter;
 
 - (void)setup;
 - (void)setupDefaults;
 - (void)setupListeners;
+- (void)setupPageViewController;
 - (void)addTabIndicatorToTabBar;
 - (void)removeTabIndicatorFromTabBar;
 - (void)handleOrientationChange;
@@ -60,16 +63,39 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
 
 - (void)setup
 {
+  [self setupPageViewController];
   [self setupDefaults];
   [self setupListeners];
 }
+
+#pragma mark - Page view controller
+
+- (void)setupPageViewController
+{
+  if (_pageViewController) {
+    return;
+  }
+  
+  _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+  
+  _pageViewController.dataSource = self;
+  _pageViewController.delegate = self;
+  _pageViewController.view.frame = self.view.bounds;
+  _pageViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  
+  [self addChildViewController:_pageViewController];
+  [self.view addSubview:_pageViewController.view];
+  [_pageViewController didMoveToParentViewController:self];
+}
+
+#pragma mark - Defaults
 
 - (void)setupDefaults
 {
   _shouldShowIndicator = YES;
   _shouldAnimateIndicator = YES;
-  _indicatorAnimationDuration = 0.25;
-  _indicatorThickness = 4.0;
+  _indicatorAnimationDuration = 0.25f;
+  _indicatorThickness = 4.0f;
   
   UIColor *white = [UIColor whiteColor];
   _indicatorColor = white;
@@ -108,7 +134,7 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
   else if ([keyPath isEqualToString:kSelectedViewControllerKey])
   {
     id viewController = change[NSKeyValueChangeNewKey];
-    NSInteger idx = [self.viewControllers indexOfObject:viewController];
+    NSInteger idx = [self.viewControllersToShow indexOfObject:viewController];
     [self animateTabIndicatorToIndex:idx];
   }
 }
@@ -129,13 +155,13 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
 
 - (void)setViewControllers:(NSArray *)viewControllers
 {
-  [super setViewControllers:viewControllers];
+  _viewControllersToShow = viewControllers;
   [self addTabIndicatorToTabBar];
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated
 {
-  [super setViewControllers:viewControllers animated:animated];
+  _viewControllersToShow = viewControllers;
   [self addTabIndicatorToTabBar];
 }
 
@@ -203,9 +229,7 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
     return _tabIndicator;
   }
   
-  CGFloat x = self.tabWidth * [self.viewControllers indexOfObject:self.selectedViewController];
-  CGRect rect = CGRectMake(0
-                           , 0, self.tabWidth, _indicatorThickness);
+  CGRect rect = CGRectMake(0, 0, self.tabWidth, _indicatorThickness);
   _tabIndicator = [[UIView alloc] initWithFrame:rect];
   _tabIndicator.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   return _tabIndicator;
@@ -223,7 +247,8 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
 
 - (void)handleOrientationChange
 {
-  CGRect rect = CGRectMake(0, 0, self.tabWidth, _indicatorThickness);
+  CGFloat x = self.tabWidth * [self.viewControllers indexOfObject:self.selectedViewController];
+  CGRect rect = CGRectMake(x, 0, self.tabWidth, _indicatorThickness);
   self.tabIndicator.frame = rect;
 }
 
