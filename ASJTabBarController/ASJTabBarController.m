@@ -11,18 +11,15 @@
 static NSString *const kViewControllersKey = @"viewControllers";
 static NSString *const kSelectedViewControllerKey = @"selectedViewController";
 
-@interface ASJTabBarController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
+@interface ASJTabBarController ()
 
-@property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) UIView *tabIndicator;
-@property (copy, nonatomic) NSArray *viewControllersToShow;
 @property (readonly, nonatomic) CGFloat tabWidth;
 @property (readonly, weak, nonatomic) NSNotificationCenter *notificationCenter;
 
 - (void)setup;
 - (void)setupDefaults;
 - (void)setupListeners;
-- (void)setupPageViewController;
 - (void)addTabIndicatorToTabBar;
 - (void)removeTabIndicatorFromTabBar;
 - (void)handleOrientationChange;
@@ -50,42 +47,18 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
   return self;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
   [super viewDidLoad];
   // Do any additional setup after loading the view.
 }
 
-- (void)didReceiveMemoryWarning {
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
-}
 #pragma mark - Setup
 
 - (void)setup
 {
-  [self setupPageViewController];
   [self setupDefaults];
   [self setupListeners];
-}
-
-#pragma mark - Page view controller
-
-- (void)setupPageViewController
-{
-  if (_pageViewController) {
-    return;
-  }
-  
-  _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
-  
-  _pageViewController.dataSource = self;
-  _pageViewController.delegate = self;
-  _pageViewController.view.frame = self.view.bounds;
-  _pageViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  
-  [self addChildViewController:_pageViewController];
-  [self.view addSubview:_pageViewController.view];
-  [_pageViewController didMoveToParentViewController:self];
 }
 
 #pragma mark - Defaults
@@ -118,10 +91,7 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
   [self addObserver:self forKeyPath:kSelectedViewControllerKey options:NSKeyValueObservingOptionNew context:nil];
   
   // NSNotification: orientation
-  [self.notificationCenter addObserverForName:UIApplicationDidChangeStatusBarFrameNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note)
-   {
-     [self handleOrientationChange];
-   }];
+  [self.notificationCenter addObserver:self selector:@selector(appDidChangeStatusBarFrame:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -134,9 +104,14 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
   else if ([keyPath isEqualToString:kSelectedViewControllerKey])
   {
     id viewController = change[NSKeyValueChangeNewKey];
-    NSInteger idx = [self.viewControllersToShow indexOfObject:viewController];
+    NSInteger idx = [self.viewControllers indexOfObject:viewController];
     [self animateTabIndicatorToIndex:idx];
   }
+}
+
+- (void)appDidChangeStatusBarFrame:(NSNotification *)note
+{
+  [self handleOrientationChange];
 }
 
 - (void)dealloc
@@ -155,13 +130,11 @@ static NSString *const kSelectedViewControllerKey = @"selectedViewController";
 
 - (void)setViewControllers:(NSArray *)viewControllers
 {
-  _viewControllersToShow = viewControllers;
   [self addTabIndicatorToTabBar];
 }
 
 - (void)setViewControllers:(NSArray *)viewControllers animated:(BOOL)animated
 {
-  _viewControllersToShow = viewControllers;
   [self addTabIndicatorToTabBar];
 }
 

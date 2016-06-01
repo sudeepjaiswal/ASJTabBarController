@@ -29,4 +29,22 @@
 
 @implementation Test
 
+- (void)setupPageViewController
+{
+  if (_pageViewController) {
+    return;
+  }
+  
+  _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+  
+  _pageViewController.dataSource = self;
+  _pageViewController.delegate = self;
+  _pageViewController.view.frame = self.view.bounds;
+  _pageViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  
+  [self addChildViewController:_pageViewController];
+  [self.view addSubview:_pageViewController.view];
+  [_pageViewController didMoveToParentViewController:self];
+}
+
 @end
